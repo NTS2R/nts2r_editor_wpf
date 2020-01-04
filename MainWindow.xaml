@@ -1,0 +1,44 @@
+﻿<Window x:Class="nts2r_editor_wpf.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:nts2r_editor_wpf"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <DockPanel>
+            <!--停靠布局，让菜单栏和工具栏位于窗口顶部-->
+            <Menu DockPanel.Dock="Top">
+                <MenuItem Header="文件">
+                    <!--菜单项为MenuItem，文字使用属性 Header-->
+                    <MenuItem Name="FileOpen" Header="打开" Click="FileOpen_OnClick"></MenuItem>
+                    <MenuItem Header="保存"></MenuItem>
+                </MenuItem>
+                <MenuItem Name="MapperModify" Header="Mapper" Click="MapperModify_OnClick"></MenuItem>
+                <MenuItem Header="导出/导入">
+                    <MenuItem Name="ExcelExport" Header="导出修改/信息表" Click="ExcelExport_OnClick"></MenuItem>
+                    <MenuItem Name="ExcelImportMilitary" Header="导入武将表" Click="ExcelImportMilitary_OnClick"></MenuItem>
+                    <MenuItem Name="ExcelImportSpecial" Header="导入武将表" Click="ExcelImportSpecial_OnClick"></MenuItem>
+                </MenuItem>
+                <MenuItem Header="关于">
+                    <MenuItem Name="WebsiteOpen" Header="NTS2R网站" Click="WebsiteOpen_OnClick"></MenuItem>
+                    <MenuItem Header="About"></MenuItem>
+                </MenuItem>
+                
+            </Menu>
+            <!-- <ToolBar DockPanel.Dock="Top"> -->
+            <!--     ~1~ToolBar和StatusBar就是一个容器@1@ -->
+            <!--     <Button Content="Save"></Button> -->
+            <!--     <Button Content="SaveAll"></Button> -->
+            <!--     <Button Content="FileExplorer"></Button> -->
+            <!--     <Button Content="Start"></Button> -->
+            <!--     <Button Content="Test"></Button> -->
+            <!-- </ToolBar> -->
+            <TextBox DockPanel.Dock="Top" Text="This is my space" Height="243"></TextBox>
+            <!-- <StatusBar DockPanel.Dock="Bottom"> -->
+            <!--     <TextBlock Text="statusBar"></TextBlock> -->
+            <!-- </StatusBar> -->
+        </DockPanel>
+    </Grid>
+</Window>
