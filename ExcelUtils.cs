@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Excel = Microsoft.Office.Interop.Excel;
+using System.Windows.Forms;
 
 namespace nts2r_editor_wpf
 {
@@ -23,8 +25,17 @@ namespace nts2r_editor_wpf
 
             FileUrl = fileUrl;
             _book = File.Exists(fileUrl) ? _excel.Application.Workbooks.Open(fileUrl) : _excel.Application.Workbooks.Add(true);
+#if DEBUG
             _excel.Visible = true;
+#endif
+            return true;
+        }
 
+        public static bool CloseExcel()
+        {
+            _book?.Close(SaveChanges: true);
+            _excel?.Quit();
+            _excel = null;
             return true;
         }
 
@@ -36,6 +47,19 @@ namespace nts2r_editor_wpf
 
         public static bool ExportMilitary(Commander commander)
         {
+            FontDialog selectFontDialog = new FontDialog();
+            var result = selectFontDialog.ShowDialog();
+            var fontName = string.Empty;
+            float fontSize;
+            if (result == DialogResult.OK)
+            {
+                fontName = selectFontDialog.Font.Name;
+                fontSize = selectFontDialog.Font.Size;
+            }
+            else
+            {
+                return false;
+            }
             bool found = false;
             foreach (Excel.Worksheet sheet in _book.Sheets)
             {
@@ -57,11 +81,11 @@ namespace nts2r_editor_wpf
             }
             int offset = 2;
             militarySheet.Cells[1, 1] = "番号";
-            militarySheet.Cells[1, 2] = "简体中文名字";
-            militarySheet.Cells[1, 3] = "战斗中文名字";
+            militarySheet.Cells[1, 2] = "简体名字";
+            militarySheet.Cells[1, 3] = "战斗名字";
             militarySheet.Cells[1, 4] = "合成等级";
-            militarySheet.Cells[1, 5] = "是否可合成";
-            militarySheet.Cells[1, 6] = "是否可做合成素材";
+            militarySheet.Cells[1, 5] = "合成";
+            militarySheet.Cells[1, 6] = "合成素材";
             militarySheet.Cells[1, 7] = "登场章节";
             militarySheet.Cells[1, 8] = "数据地址";
             militarySheet.Cells[1, 9] = "武力";
@@ -70,7 +94,7 @@ namespace nts2r_editor_wpf
             militarySheet.Cells[1, 12] = "武器";
             militarySheet.Cells[1, 13] = "地形";
             militarySheet.Cells[1, 14] = "大将";
-            militarySheet.Cells[1, 15] = "加成百分比%";
+            militarySheet.Cells[1, 15] = "加成%";
             militarySheet.Cells[1, 16] = "仁";
             militarySheet.Cells[1, 17] = "慧";
             militarySheet.Cells[1, 18] = "挡";
@@ -96,11 +120,14 @@ namespace nts2r_editor_wpf
             militarySheet.Cells[1, 38] = "攻击倍率";
             Excel.Range captionRange = militarySheet.Range[militarySheet.Cells[1, 1], militarySheet.Cells[1, militarySheet.Columns.Count]];
             captionRange.Font.Bold = true;
+            var generalSkillData = Utils.GetAllGeneral();
             for (int index = 0; index <= 0xFF; index++)
             {
                 var military = commander.GetMilitary(index);
                 militarySheet.Cells[offset + index, 1].NumberFormat = "\"0x\"@";
                 militarySheet.Cells[offset + index, 1] = index.ToString("X2");
+                militarySheet.Cells[offset + index, 2] = Utils.GetChsName(military.ChsNameBytes.ToArray());
+                militarySheet.Cells[offset + index, 3] = Utils.GetChtName(military.ChtNameBytes, military.ChtNameControl);
                 militarySheet.Cells[offset + index, 4] = military.CompositeLimitLevel;
                 militarySheet.Cells[offset + index, 7] = military.Chapter;
                 militarySheet.Cells[offset + index, 8].NumberFormat = "\"0x\"@";
@@ -109,6 +136,15 @@ namespace nts2r_editor_wpf
                 militarySheet.Cells[offset + index, 9] = military.Force;
                 militarySheet.Cells[offset + index, 10] = military.Wit;
                 militarySheet.Cells[offset + index, 11] = military.Speed;
+                militarySheet.Cells[offset + index, 12] = Utils.GetDegradeName(military.DegradeCategory);
+                militarySheet.Cells[offset + index, 13] = Utils.GetTerrainName(military.Terrain);
+                militarySheet.Cells[offset + index, 15].NumberFormat = "#0.00";
+                var general = generalSkillData[Convert.ToByte(index)];
+                if (general.Item1 != string.Empty)
+                {
+                    militarySheet.Cells[offset + index, 14] = general.Item1;
+                    militarySheet.Cells[offset + index, 15] = (general.Item2 / 256.0 * 100).ToString("f2");
+                }
                 militarySheet.Cells[offset + index, 16] = military._skill.ren == 0x01 ? "仁" : "";
                 militarySheet.Cells[offset + index, 17] = military._skill.hui == 0x01 ? "慧" : "";
                 militarySheet.Cells[offset + index, 18] = military._skill.dang == 0x01 ? "挡" : "";
@@ -131,11 +167,23 @@ namespace nts2r_editor_wpf
                 militarySheet.Cells[offset + index, 35] = military._skill.ming == 0x01 ? "命" : "";
                 militarySheet.Cells[offset + index, 36] = military.AttackCount;
                 militarySheet.Cells[offset + index, 37] = military.StratagemCount;
-                militarySheet.Cells[offset + index, 38] = (military.MilitaryLimit / 256.0).ToString("F4");
+                militarySheet.Cells[offset + index, 38].NumberFormat = "#0.0000";
+                militarySheet.Cells[offset + index, 38] = (military.MilitaryLimit / 256.0).ToString("#0.0000");
+            }
+            Debug.WriteLine(Utils.GetNotCompositeToObject());
+            Debug.WriteLine(Utils.GetNotCompositeAsObject());
+            foreach (var index in Utils.GetNotCompositeToObject())
+            {
+                militarySheet.Cells[offset + index, 5] = "否";
             }
 
-            militarySheet.UsedRange.Font.Name = "思源宋体";
-            militarySheet.UsedRange.Font.Size = 12;
+            foreach (var index in Utils.GetNotCompositeAsObject())
+            {
+                militarySheet.Cells[offset + index, 6] = "否";
+            }
+
+            militarySheet.UsedRange.Font.Name = fontName;
+            militarySheet.UsedRange.Font.Size = fontSize;
             militarySheet.UsedRange.EntireColumn.AutoFit();
             militarySheet.UsedRange.EntireRow.AutoFit();
             return true;

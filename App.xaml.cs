@@ -13,5 +13,10 @@ namespace nts2r_editor_wpf
     /// </summary>
     public partial class App : Application
     {
+        protected override void OnExit(ExitEventArgs e)
+        {
+            ExcelUtils.CloseExcel();
+            base.OnExit(e);
+        }
     }
 }

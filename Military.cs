@@ -58,15 +58,15 @@ namespace nts2r_editor_wpf
         private byte _enemyStratagemValue; //8 敌方谋略值
         private byte _enemyAttackValue; //9 敌方攻击力
         private byte _enemyDefenseValue; //10 敌方防御力
-        private byte _terrain; // 11 地形 0xF0
+        public byte Terrain { get; set; } // 11 地形 0xF0
         private byte _stratagemCategory; // 11 计策流派 0x0F
-        private byte _weaponCategory; // 12 武器
+        public byte DegradeCategory { get; set; } // 12 武器
         private byte _treasureCategory; //13 宝物 0x1F
         private byte[] _faceBytes = new byte[6]; // 14-19 脸谱
         private byte _faceControl; // 21 脸谱控制 0xF0
-        private byte _chtNameControl; // 21 繁体名字控制 0x0F;
-        private byte[] _chtNameBytes = new byte[3]; // 22-24 繁体名字
-        private List<byte> _chsNameBytes = new List<byte>();
+        public byte ChtNameControl { get; set; } // 21 繁体名字控制 0x0F;
+        public byte[] ChtNameBytes = new byte[3]; // 22-24 繁体名字
+        public List<byte> ChsNameBytes = new List<byte>();
         public byte CompositeLimitLevel { get; set; } //合成等级控制
         public byte AttackCount { get; set; } // 攻击次数
         public byte StratagemCount { get; set; } // 策略次数
@@ -93,9 +93,9 @@ namespace nts2r_editor_wpf
             _enemyStratagemValue = _militaryData[8];
             _enemyAttackValue = _militaryData[9];
             _enemyDefenseValue = _militaryData[10];
-            _terrain = (byte) ((_militaryData[11] & 0xF0) >> 4);
+            Terrain = (byte) ((_militaryData[11] & 0xF0) >> 4);
             _stratagemCategory = (byte)(_militaryData[11] & 0x0F);
-            _weaponCategory = (byte)(_militaryData[12] & 0x07);
+            DegradeCategory = (byte)(_militaryData[12] & 0x07);
             _skill.bi = (byte)((_militaryData[12] & 0x80) >> 7);
             _skill.gong = (byte)((_militaryData[12] & 0x40) >> 6);
             _skill.wu = (byte)((_militaryData[12] & 0x20) >> 5);
@@ -120,15 +120,15 @@ namespace nts2r_editor_wpf
             _skill.ming = (byte)(_militaryData[20] & 0x01);
 
             _faceControl = (byte)((_militaryData[21] & 0xF0) >> 4);
-            _chtNameControl = (byte)(_militaryData[21] & 0x0F);
+            ChtNameControl = (byte)(_militaryData[21] & 0x0F);
             for (int i = 0; i < 3; i++)
             {
-                _chtNameBytes[i] = _militaryData[22 + i];
+                ChtNameBytes[i] = _militaryData[22 + i];
             }
 
             for (int i = 25; i < _militaryData.Count; i++)
             {
-                _chsNameBytes.Add(_militaryData[i]);
+                ChsNameBytes.Add(_militaryData[i]);
             }
 
             CompositeLimitLevel = Utils.GetCompositeLimitLevel(index);

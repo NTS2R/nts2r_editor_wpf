@@ -1,0 +1,22 @@
+﻿<Window x:Class="nts2r_editor_wpf.About"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:nts2r_editor_wpf"
+        mc:Ignorable="d"
+        Title="关于本修改器" Height="250" Width="320" ResizeMode="NoResize">
+    <Grid>
+        <TextBlock FontSize="16" TextWrapping="Wrap">
+            欢迎使用NTS2R_Editor<LineBreak/>
+            本修改器只支持NTS2R1.87up4<LineBreak/>
+            其他版本不保证任何不损坏ROM的兼容性<LineBreak/>
+            <LineBreak/>
+            欢迎反馈BUG，请到QQ群内反馈<LineBreak/>
+            <LineBreak/>
+            欢迎加入以下QQ群<LineBreak/>
+            吞食天地NTS2R： 1026707327<LineBreak/>
+            吞食天地2ROM修改器： 452643436
+        </TextBlock>
+    </Grid>
+</Window>

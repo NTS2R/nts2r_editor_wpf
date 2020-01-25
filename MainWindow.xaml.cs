@@ -51,6 +51,8 @@ namespace nts2r_editor_wpf
             ExcelImportSpecial.IsEnabled = true;
             MapperModify.IsEnabled = true;
             // ExcelUtils.OpenExcel(Utils.GetExcelUrl());
+
+            Utils.ParseConfig();
         }
 
         private void WebsiteOpen_OnClick(object sender, RoutedEventArgs e)
@@ -84,6 +86,13 @@ namespace nts2r_editor_wpf
             string newMapperValue = Interaction.InputBox("4(VisualNes)\n195(FCEUX)\n198(Other)\n224(nestopia)", "请修改Mapper", Utils.GetMapper().ToString());
             Debug.WriteLine($"new mapper {newMapperValue}");
             
+        }
+
+        private void AboutItem_OnClick(object sender, RoutedEventArgs e)
+        {
+            var aboutWindow = new About();
+            aboutWindow.ShowDialog();
+            //throw new NotImplementedException();
         }
     }
 }
