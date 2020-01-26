@@ -21,6 +21,11 @@ namespace nts2r_editor_wpf
             return true;
         }
 
+        public static bool SaveFile()
+        {
+            throw new NotImplementedException();
+        }
+
         public static string GetExcelUrl()
         {
             return _nesExcelUrl;
@@ -203,6 +208,12 @@ namespace nts2r_editor_wpf
                 list.Add(militaryIndex);
             }
             return list.Distinct().ToArray();
+        }
+
+        public static bool IsExcelInstalled()
+        {
+            var type = Type.GetTypeFromProgID("Excel.Application");
+            return type != null;
         }
     }
 }
