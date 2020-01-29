@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using Microsoft.Win32;
 
 namespace nts2r_editor_wpf
 {
@@ -19,6 +20,24 @@ namespace nts2r_editor_wpf
             _nesData = Utils.FileToByte(_nesFileUrl);
             _nesExcelUrl = _nesFileUrl.Replace(".nes", ".xlsx");
             return true;
+        }
+
+        private static readonly Dictionary<string, string> filterDictionary = new Dictionary<string, string>()
+        {
+            {"Game", "游戏文件|*.nes" },
+            {"Excel", "Excel 2007|*.xlsx" }
+        };
+
+        public static string OpenFileDialog(string filter)
+        {
+            var openFileDialog = new OpenFileDialog
+            {
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+                Filter = filterDictionary[filter],
+                RestoreDirectory = true,
+                FilterIndex = 1
+            };
+            return openFileDialog.ShowDialog() != true ? string.Empty : openFileDialog.FileName;
         }
 
         public static bool SaveFile()
@@ -71,7 +90,10 @@ namespace nts2r_editor_wpf
 
         public static short GetMilitaryLimit(int index)
         {
-            return Config.GetMilitaryLimit(index);
+            var (militaryLimitLowAddress, militaryLimitHighAddress) = Config.GetMilitaryLimit(index);
+            var low = Utils.GetNesByte(militaryLimitLowAddress + index);
+            var high = Utils.GetNesByte(militaryLimitHighAddress + index);
+            return (short) (high * 0x100 + low);
         }
 
         public static bool SetMapper(byte mapperValue)
@@ -130,9 +152,9 @@ namespace nts2r_editor_wpf
         {
             if (nameBytes.Length != 3) return "";
             var chtName = string.Empty;
-            for (int i = 0; i < 3; i++)
+            for (var i = 0; i < 3; i++)
             {
-                byte areaIndex = (byte) (((1 << (2 - i)) & nameControl) > 0 ? 1 : 0);
+                var areaIndex = (byte) (((1 << (2 - i)) & nameControl) > 0 ? 1 : 0);
                 chtName += Config.GetChtNameWord(nameBytes[i], areaIndex);
             }
 
@@ -151,10 +173,10 @@ namespace nts2r_editor_wpf
 
         public static Dictionary<byte, Tuple<string, byte>> GetAllGeneral()
         {
-            var indexWithGenernal = new Dictionary<byte, Tuple<string, byte>>();
-            (var generalAddress, var genernalDictionary) = Config.GetGeneralAddressWithDictionary();
+            var indexWithGeneral = new Dictionary<byte, Tuple<string, byte>>();
+            var (generalAddress, generalDictionary) = Config.GetGeneralAddressWithDictionary();
             var flagToGeneralSkill = new Dictionary<byte, string>();
-            foreach (var item in genernalDictionary)
+            foreach (var item in generalDictionary)
             {
                 Debug.WriteLine($"key : {item.Value.Flag:x2}, value: {item.Key}");
                 flagToGeneralSkill.Add(item.Value.Flag, item.Key);
@@ -166,23 +188,23 @@ namespace nts2r_editor_wpf
                 if (flagToGeneralSkill.ContainsKey(flag))
                 {
                     var generalSkillName = flagToGeneralSkill[flag];
-                    var generalSKillAddress = genernalDictionary[generalSkillName].Address;
+                    var generalSKillAddress = generalDictionary[generalSkillName].Address;
                     var data = GetNesByte(generalSKillAddress + index);
-                    indexWithGenernal.Add(
+                    indexWithGeneral.Add(
                         Convert.ToByte(index),
                         new Tuple<string, byte>(generalSkillName, data)
                     );
                 }
                 else
                 {
-                    indexWithGenernal.Add(
+                    indexWithGeneral.Add(
                         Convert.ToByte(index),
                         new Tuple<string, byte>(string.Empty, 0)
                     );
                 }
             }
 
-            return indexWithGenernal;
+            return indexWithGeneral;
         }
 
         public static byte[] GetNotCompositeAsObject()
@@ -214,6 +236,17 @@ namespace nts2r_editor_wpf
         {
             var type = Type.GetTypeFromProgID("Excel.Application");
             return type != null;
+        }
+
+        public static int GetMilitaryStartAddress(int index)
+        {
+            (var militaryLowIndexAddress, 
+                var militaryHighIndexAddress, 
+                var militaryBaseAddress) = Config.GetMilitaryBaseAddress(index);
+            var low = Utils.GetNesByte(militaryLowIndexAddress + index);
+            var high = Utils.GetNesByte(militaryHighIndexAddress + index);
+            var address = militaryBaseAddress + high * 0x100 + low;
+            return address;
         }
     }
 }

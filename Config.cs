@@ -53,21 +53,14 @@ namespace nts2r_editor_wpf
             return militaryNotCompositeToObjectAddress;
         }
 
-        // ToDo 错误使用Utils
-        public static int GetMilitaryBaseAddress(int index)
+        public static Tuple<int, int, int> GetMilitaryBaseAddress(int index)
         {
-            var low = Utils.GetNesByte(militaryLowIndexAddress + index);
-            var high = Utils.GetNesByte(militaryHighIndexAddress + index);
-            var address = militaryBaseAddress + high * 0x100 + low;
-            return address;
+            return new Tuple<int, int, int>(militaryLowIndexAddress, militaryHighIndexAddress, militaryBaseAddress);
         }
 
-        // ToDo 错误划分职责
-        public static short GetMilitaryLimit(int index)
+        public static Tuple<int, int> GetMilitaryLimit(int index)
         {
-            var low = Utils.GetNesByte(militrayLimitLowAddress + index);
-            var high = Utils.GetNesByte(militrayLimitHighAddress + index);
-            return (short) (high * 0x100 + low);
+            return new Tuple<int, int>(militrayLimitLowAddress, militrayLimitHighAddress);
         }
 
         public static int GetMilitaryLeastLength()

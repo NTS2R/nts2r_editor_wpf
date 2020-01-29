@@ -19,7 +19,7 @@
                 <MenuItem Name="ExcelItem"  Header="导出/导入">
                     <MenuItem Name="ExcelExport" Header="导出修改/信息表" Click="ExcelExport_OnClick"></MenuItem>
                     <MenuItem Name="ExcelImportMilitary" Header="导入武将表" Click="ExcelImportMilitary_OnClick"></MenuItem>
-                    <MenuItem Name="ExcelImportSpecial" Header="导入武将表" Click="ExcelImportSpecial_OnClick"></MenuItem>
+                    <MenuItem Name="ExcelImportSpecial" Header="导入特殊表" Click="ExcelImportSpecial_OnClick"></MenuItem>
                 </MenuItem>
                 <MenuItem Header="关于">
                     <MenuItem Name="WebsiteOpen" Header="NTS2R网站" Click="WebsiteOpen_OnClick"></MenuItem>

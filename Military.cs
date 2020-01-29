@@ -33,19 +33,16 @@ namespace nts2r_editor_wpf
             public byte ming { get; set; }// 20 0x01 （命）命中
         }
 
-        struct Admiral
+        struct General
         {
-            public byte admiralCategory;
-            public byte gong;
-            public byte fang;
-            public byte ming;
-            public byte bi;
+            public byte GeneralCategory;
+            public byte Data;
         }
 
         private List<byte> _militaryData; //人物数据
         public int Address { get; set; }
         public Skill _skill;
-        private Admiral _admiral;
+        private General _general;
         private byte _color; //0模型颜色
         public byte Chapter { get; set; } //0章节
         private byte _model; //1模型

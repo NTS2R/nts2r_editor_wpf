@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -13,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using Microsoft.Win32;
 using Excel = Microsoft.Office.Interop.Excel;
 using Microsoft.VisualBasic;
@@ -51,15 +53,13 @@ namespace nts2r_editor_wpf
 
         private void FileOpen_OnClick(object sender, RoutedEventArgs e)
         {
-            var openFileDialog = new OpenFileDialog
+            var filename = Utils.OpenFileDialog("Game");
+            if (filename == string.Empty)
             {
-                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-                Filter = "游戏文件|*.nes",
-                RestoreDirectory = true,
-                FilterIndex = 1
-            };
-            if (openFileDialog.ShowDialog() != true) return;
-            Utils.OpenFile(openFileDialog.FileName);
+                MessageBox.Show("没有选择文件", "警告");
+                return;
+            }
+            Utils.OpenFile(filename);
             _commander = new Commander();
             if (Utils.IsExcelInstalled())
             {
@@ -67,7 +67,6 @@ namespace nts2r_editor_wpf
             }
             MapperModify.IsEnabled = true;
             FileSave.IsEnabled = true;
-            // ExcelUtils.OpenExcel(Utils.GetExcelUrl());
 
             Utils.ParseConfig();
         }
@@ -82,18 +81,44 @@ namespace nts2r_editor_wpf
 
         private void ExcelExport_OnClick(object sender, RoutedEventArgs e)
         {
-            ExcelUtils.OpenExcel(Utils.GetExcelUrl());
-            ExcelUtils.ExportAll(_commander);
-            ExcelUtils.Save();
+            MessageBox.Show("导出完成之前，导入导出功能暂时不可用", "警告");
+            DisabledExcelFunction();
+            new Thread(
+                () =>
+                {
+                    ExcelUtils.OpenExcel(Utils.GetExcelUrl());
+                    ExcelUtils.ExportAll(_commander);
+                    ExcelUtils.Save();
+                    ExcelUtils.CloseExcel();
+                    this.Dispatcher.BeginInvoke(DispatcherPriority.Normal,
+                        new Action(this.EnabledExcelFunction
+                        ));
+                    
+                }
+                ).Start();
         }
 
         private void ExcelImportMilitary_OnClick(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            var filename = Utils.OpenFileDialog("Excel");
+            if (filename == string.Empty)
+            {
+                MessageBox.Show("没有选择文件", "警告");
+                return;
+            }
+            ExcelUtils.OpenExcel(Utils.GetExcelUrl());
+            ExcelUtils.ImportMilitary(_commander);
+            ExcelUtils.CloseExcel();
         }
 
         private void ExcelImportSpecial_OnClick(object sender, RoutedEventArgs e)
         {
+            var filename = Utils.OpenFileDialog("Excel");
+            if (filename == string.Empty)
+            {
+                MessageBox.Show("没有选择文件", "警告");
+                return;
+            }
             throw new NotImplementedException();
         }
 

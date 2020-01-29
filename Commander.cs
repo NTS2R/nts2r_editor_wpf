@@ -14,7 +14,7 @@ namespace nts2r_editor_wpf
             var leastLength = Config.GetMilitaryLeastLength();
             for (int index = 0x00; index <= 0xFF; index++)
             {
-                var startAddress = Config.GetMilitaryBaseAddress(index);
+                var startAddress = Utils.GetMilitaryStartAddress(index);
                 List<byte> data = new List<byte>();
 
                 for (int i = 0; i < leastLength; i++)
