@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Copyright (c) 2020 Rabenda
+// The code under release by MIT License
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;

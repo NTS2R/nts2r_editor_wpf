@@ -1,4 +1,6 @@
-﻿using System.Reflection;
+﻿// Copyright (c) 2020 Rabenda
+// The code under release by MIT License
+using System.Reflection;
 using System.Resources;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
